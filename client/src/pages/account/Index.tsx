@@ -8,6 +8,7 @@ import { Toggle } from "components/common/Toggle";
 import WidthContainer from "components/common/WidthContainer";
 import CurrencySelect from "components/ManageArtist/CountrySelectForm";
 import ProfileSection from "components/Profile/ProfileSection";
+import HighContrastRadio from "components/Profile/HighContrastRadio";
 import { finishedLanguages } from "i18n";
 import { useProfileMutation } from "queries";
 import React from "react";
@@ -46,11 +47,14 @@ const Index: React.FC = () => {
       language: language.split("-")[0],
       isLabelAccount: user?.isLabelAccount,
       urlSlug: user?.urlSlug,
-      properties: user?.properties || {},
+      properties: {
+        ...user?.properties,
+        highContrast: user?.properties?.highContrast ?? "system",
+      },
       accountingEmail: user?.accountingEmail,
     },
   });
-  const { register, handleSubmit, watch, setValue } = methods;
+  const { register, handleSubmit, watch, setValue, reset } = methods;
 
   const navigate = useNavigate();
 
@@ -70,7 +74,20 @@ const Index: React.FC = () => {
             snackbar("Must set password", { type: "warning" });
           } else {
             const isEmailChange = user.email !== data.newEmail;
-            await mutateAsync({ ...data, userId });
+            const properties = {
+              ...(user.properties ?? {}),
+              ...(data.properties ?? {}),
+              highContrast:
+                data.properties?.highContrast ??
+                user.properties?.highContrast ??
+                "system",
+            };
+            await mutateAsync({ ...data, userId, properties });
+            reset({
+              ...data,
+              properties,
+            });
+            refreshLoggedInUser();
             i18n.changeLanguage(data.language);
             snackbar(
               isEmailChange
@@ -86,7 +103,7 @@ const Index: React.FC = () => {
         }
       }
     },
-    [snackbar, userId, user?.email, errorHandler, i18n, mutateAsync, t]
+    [snackbar, userId, user?.email, user?.properties, errorHandler, i18n, mutateAsync, t, reset, refreshLoggedInUser]
   );
 
   const deleteAccount = React.useCallback(async () => {
@@ -153,6 +170,7 @@ const Index: React.FC = () => {
               ))}
             </SelectEl>
           </FormComponent>
+          <HighContrastRadio />
           <CanCreateArtists>
             <FormComponent>
               <Toggle

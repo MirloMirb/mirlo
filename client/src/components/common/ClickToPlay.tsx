@@ -332,7 +332,9 @@ const ClickToPlay: React.FC<
           {/*
            * Likewise, this "Go to album" text SHOULD also be used to describe the album link (through aria-label).
            */}
-          <p aria-hidden>{t(linkLabelKey)}</p>
+          <p aria-hidden className="mi-click-to-play-label">
+            {t(linkLabelKey)}
+          </p>
         </PlayWrapper>
 
         {currentlyPlaying && <PlayingMusicBars />}

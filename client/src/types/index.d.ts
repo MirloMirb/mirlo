@@ -5,6 +5,8 @@ interface Paginated<T> {
   pages: number;
 }
 
+type HighContrastPreference = "system" | "on" | "off";
+
 interface LoggedInUser {
   email: string;
   accountingEmail?: string;
@@ -24,7 +26,7 @@ interface LoggedInUser {
   currency?: string;
   featureFlags?: string[];
   isLabelAccount: boolean;
-  properties?: { tileBackgroundImage?: boolean };
+  properties?: { tileBackgroundImage?: boolean; highContrast?: HighContrastPreference };
   trackFavorites?: {
     userId: number;
     trackId: number;
